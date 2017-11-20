@@ -132,9 +132,9 @@ $gray-850:                  #222222;
 $gray-900:                  #1c1c1c;
 $gray-950:                  #151515;
 
-$body-bg: $purple-110;
+$body-bg: $gray-50;
 
-$brand-primary: #fff;
+$brand-primary: #000;
 $brand-info: #8eb4cb;
 $brand-success: #2ab27b;
 $brand-warning: #cbb956;
@@ -145,7 +145,7 @@ $icon-font-path: "~bootstrap-sass/assets/fonts/bootstrap/";
 $font-family-sans-serif: 'Source Code Pro',monospace;
 $font-size-base: 12px;
 $line-height-base: 1.6;
-$text-color: #fff;
+$text-color: #000;
 
 // 10. Components
 $border-radius-base: 0px !default;
@@ -159,7 +159,7 @@ $input-border-focus: lighten($brand-primary, 25%);
 $input-color-placeholder: lighten($text-color, 30%);
 
 // 16. Navbar
-$navbar-default-bg: #fff;
+$navbar-default-bg: #000;
 
 // 37. Misc
-$panel-default-heading-bg: #fff;
+$panel-default-heading-bg: #000;

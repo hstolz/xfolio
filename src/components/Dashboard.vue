@@ -1,8 +1,15 @@
 <template>
   <div class="hello">
-    <div class="container">
+    <div class="container-fluid">
       <div class="row">
-        <div class="col-md-8 col-md-offset-2">
+        <nav class="navbar navbar-inverse bg-inverse">
+          <a class="navbar-brand" href="#">XFolio</a>
+        </nav>
+        <currency-list class="col-md-3"> Hello </currency-list>
+        <!-- put currency-list here -->
+        <!-- put chart here  -->
+
+        <!-- <div class="col-md-8 col-md-offset-2">
           <h1 class="page-header">Blockstack Todo App
             <img :src="user.avatarUrl() ? user.avatarUrl() : '/avatar-placeholder.png'" class="avatar">
             <small><span class="sign-out">(<a href="#" @click.prevent="signOut">Sign Out</a>)</span></small>
@@ -39,7 +46,7 @@
             </li>
           </ul>
 
-        </div>
+        </div> -->
       </div>
     </div>
   </div>
@@ -48,9 +55,12 @@
 <script>
 var STORAGE_FILE = 'todos.json'
 
+import CurrencyList from './CurrencyList.vue'
+
 export default {
   name: 'dashboard',
   props: ['user'],
+  components: { CurrencyList },
   data () {
     return {
       blockstack: window.blockstack,

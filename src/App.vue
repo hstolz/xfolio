@@ -29,6 +29,29 @@ export default {
         window.location = window.location.origin
       })
     }
+
+    const socket = new WebSocket('wss://ws-feed.gdax.com')
+
+    socket.addEventListener('open', function (event) {
+      var msg = {
+        'type': 'subscribe',
+        'product_ids': ['BTC-USD', 'ETH-USD', 'LTC-USD'],
+        'channels': ['ticker']
+      }
+      socket.send(JSON.stringify(msg))
+    })
+
+    // probably should make this only happen when focus goes on some element
+    socket.addEventListener('message', function (event) {
+      var msg = JSON.parse(event.data)
+      if (msg.type === 'ticker') {
+        document.querySelector('#' + msg.product_id.split('-')[0] +
+                               '-LI .currency-value').innerHTML = parseFloat(msg.price).toFixed(2)
+      }
+    })
+
+    socket.addEventListener('error', function (event) { console.log('socket error') })
+    socket.addEventListener('close', function (event) { console.log('socket close') })
   },
   data () {
     return {
@@ -37,6 +60,7 @@ export default {
     }
   }
 }
+
 </script>
 
 <style src="./assets/sass/app.scss" lang="scss"></style>

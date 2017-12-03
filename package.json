@@ -1,8 +1,8 @@
 {
-  "name": "bs-todo",
-  "version": "4.0.0",
-  "description": "A decentralized Todo app built on Blockstack",
-  "author": "Michael Stivala <michaelstivala@me.com>",
+  "name": "xfolio",
+  "version": "0.0.0",
+  "description": "A decentralized Cryptocurrency Portfolio app built on Blockstack",
+  "author": "Henry Stolz <hstolz@princeton.edu>",
   "private": true,
   "scripts": {
     "dev": "node build/dev-server.js",
@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "axios": "^0.16.1",
-    "blockstack": "0.11.1",
+    "blockstack": "^0.13.7",
     "bootstrap-sass": "^3.3.7",
     "iview": "^2.7.4",
     "node-sass": "^4.5.3",

@@ -1,7 +1,7 @@
 {
-  "name": "Todo App",
-  "start_url": "http://blockstack-todos.appartisan.com",
-  "description": "A simple todo app build on blockstack",
+  "name": "XFolio",
+  "start_url": ".",
+  "description": "A decentralized cryptocurrency portfolio manager on Blockstack",
   "icons": [{
     "src": "http://blockstack-todos.appartisan.com/logo.png",
     "sizes": "400x400",

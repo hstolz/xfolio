@@ -1,12 +1,18 @@
 <template>
-  <div class="hello">
+  <div>
     <div class="container-fluid">
       <div class="row">
         <nav class="navbar navbar-inverse bg-inverse">
           <a class="navbar-brand" href="#">XFolio</a>
         </nav>
-        <currency-list class="col-md-3"> Hello </currency-list>
-        <!-- put currency-list here -->
+        <ul class="col-md-3">
+          <currency 
+            v-for="currency in currencies"
+            v-bind:name="currency.name"
+            v-bind:price="currency.price"
+            v-bind:key="currency.id">
+          </currency>
+        </ul>
         <!-- put chart here  -->
 
         <!-- <div class="col-md-8 col-md-offset-2">
@@ -53,19 +59,24 @@
 </template>
 
 <script>
-var STORAGE_FILE = 'todos.json'
+var STORAGE_FILE = 'xfolio.json'
 
-import CurrencyList from './CurrencyList.vue'
+import Currency from './Currency.vue'
 
 export default {
   name: 'dashboard',
   props: ['user'],
-  components: { CurrencyList },
+  components: { Currency },
   data () {
     return {
       blockstack: window.blockstack,
-      todos: [],
-      todo: '',
+      currencies: [
+        { id: 0, name: 'BTC', price: 0 },
+        { id: 1, name: 'ETH', price: 0 },
+        { id: 2, name: 'LTC', price: 0 }
+      ],
+      map: { 'BTC-USD': 0, 'ETH-USD': 1, 'LTC-USD': 2 },
+      currency: '',
       uidCount: 0
     }
   },
@@ -81,19 +92,44 @@ export default {
   },
   mounted () {
     this.fetchData()
+    var self = this
+    const socket = new WebSocket('wss://ws-feed.gdax.com')
+
+    socket.addEventListener('open', function (event) {
+      var msg = {
+        'type': 'subscribe',
+        'product_ids': ['BTC-USD', 'ETH-USD', 'LTC-USD'],
+        'channels': ['ticker']
+      }
+      socket.send(JSON.stringify(msg))
+    })
+
+    // probably should make this only happen when focus goes on some element
+    socket.addEventListener('message', function (event) {
+      var msg = JSON.parse(event.data)
+      if (msg.type === 'ticker') {
+        self.updatePrice(msg.product_id, msg.price)
+      }
+    })
+
+    socket.addEventListener('error', function (event) { console.log('socket error') })
+    socket.addEventListener('close', function (event) { console.log('socket close') })
   },
   methods: {
-    addTodo () {
-      if (!this.todo.trim()) {
-        return
-      }
-      this.todos.unshift({
-        id: this.uidCount++,
-        text: this.todo.trim(),
-        completed: false
-      })
-      this.todo = ''
+    updatePrice (name, price) {
+      this.currencies[this.map[name]].price = price
     },
+    // addTodo () {
+    //   if (!this.todo.trim()) {
+    //     return
+    //   }
+    //   this.todos.unshift({
+    //     id: this.uidCount++,
+    //     text: this.todo.trim(),
+    //     completed: false
+    //   })
+    //   this.todo = ''
+    // },
 
     fetchData () {
       const blockstack = this.blockstack
@@ -131,6 +167,11 @@ label {
     margin-right: 5px;
   }
 }
+
+ul {
+  list-style: none;
+}
+
 .list-group-item {
   &.completed label {
     text-decoration: line-through;
@@ -149,4 +190,5 @@ label {
     }
   }
 }
+
 </style>

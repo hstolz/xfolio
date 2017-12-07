@@ -2,10 +2,6 @@
   <div id="app">
     <landing v-if="! blockstack.isUserSignedIn()"></landing>
     <dashboard v-if="user" :user="user"></dashboard>
-
-    <small class="creds">
-      Source code on <a href="https://github.com/hstolz/xfolio" target="_blank">Github</a>
-    </small>
   </div>
 </template>
 
@@ -40,4 +36,4 @@ export default {
 
 </script>
 
-<style src="./assets/sass/app.scss" lang="scss"></style>
+<style lang="less"></style>

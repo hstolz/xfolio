@@ -1,12 +1,13 @@
 // Fonts
-@import url("https://fonts.googleapis.com/css?family=Source+Code+Pro:300,400,500,600,700");
+@import url('https://fonts.googleapis.com/css?family=Roboto');
 
 // Bootstrap
 @import "variables";
-@import "node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
+// @import "node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
 
 html, body, #app {
   height: 100%;
+  font-family: $font-family;
 }
 
 .avatar {
@@ -19,13 +20,6 @@ html, body, #app {
   &.btn-default {
     color: $purple-110
   }
-}
-
-.creds {
-  position: absolute;
-  bottom: 5px;
-  right: 5px;
-  text-align: right;
 }
 
 .list-group-item {

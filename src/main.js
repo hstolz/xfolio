@@ -2,8 +2,9 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import iView from 'iview'
-import App from './App'
 import locale from 'iview/dist/locale/en-US'
+import App from './App'
+import '../src/assets/styles/app.less'
 
 window.blockstack = require('blockstack')
 window.axios = require('axios')

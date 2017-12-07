@@ -1,72 +1,81 @@
 <template>
-  <div>
-    <div class="container-fluid">
-      <div class="row">
-        <nav class="navbar navbar-inverse bg-inverse">
-          <a class="navbar-brand" href="#">XFolio</a>
-        </nav>
-        <ul class="col-md-3">
-          <currency 
+  <div class="layout" :class="{'layout-hide-text': spanLeft < 5}">
+    <Row type="flex">
+      <Col :span="spanLeft" class="layout-menu-left">
+        <Menu active-name="1" theme="dark" width="auto">
+          <Row type="flex">
+            <Col :span="12" class="layout-header"></Col>
+            <Col :span="12" class="layout-header">
+              <Button type="text" @click="toggleClick">
+                <Icon type="plus" size="32" class="expand-toggle"></Icon>
+              </Button>
+            </Col>
+          </Row>
+          <!-- <MenuItem name="1">
+            <Icon type="ios-navigate" :size="iconSize"></Icon>
+            <span class="layout-text">Option 1</span>
+          </MenuItem>
+          <MenuItem name="2">
+            <Icon type="ios-keypad" :size="iconSize"></Icon>
+            <span class="layout-text">Option 2</span>
+          </MenuItem>
+          <MenuItem name="3">
+            <Icon type="ios-analytics" :size="iconSize"></Icon>
+            <span class="layout-text">Option 3</span>
+          </MenuItem> -->
+          <currency
             v-for="currency in currencies"
             v-bind:name="currency.name"
             v-bind:price="currency.price"
             v-bind:key="currency.id">
           </currency>
-        </ul>
-        <!-- put chart here  -->
-
-        <!-- <div class="col-md-8 col-md-offset-2">
-          <h1 class="page-header">Blockstack Todo App
-            <img :src="user.avatarUrl() ? user.avatarUrl() : '/avatar-placeholder.png'" class="avatar">
-            <small><span class="sign-out">(<a href="#" @click.prevent="signOut">Sign Out</a>)</span></small>
-          </h1>
-          <h2 class="user-info">
-            <small>
-              {{ user.name() ? user.name() : 'Nameless Person'}}'s Todos
-            </small>
-            <small class="pull-right">
-            {{ user.username ? user.username : user.identityAddress }}
-            </small>
-
-          </h2>
-          <form @submit.prevent="addTodo" :disabled="! todo">
-            <div class="input-group">
-              <input v-model="todo" type="text" class="form-control" placeholder="Write a todo..." autofocus>
-              <span class="input-group-btn">
-                <button class="btn btn-default" type="submit" :disabled="! todo">Add</button>
-              </span>
-            </div>
-          </form>
-
-          <ul class="list-group">
-            <li v-for="todo in todos"
-              class="list-group-item"
-              :class="{completed: todo.completed}"
-              :key="todo.id">
-              <label>
-                <input type="checkbox" v-model="todo.completed">{{ todo.text }}
-              </label>
-              <a @click.prevent="todos.splice(todos.indexOf(todo), 1)"
-                class="delete pull-right"
-                href="#">X</a>
-            </li>
-          </ul>
-
-        </div> -->
-      </div>
-    </div>
+        </Menu>
+      </Col>
+      <Col :span="spanMiddle" class="options">
+      </Col>
+      <Col :span="spanRight">
+        <div class="layout-content">
+          <!-- <graph></graph> -->
+          <div class="layout-content-main">
+            <Input v-model="test" style="width: 300px"></Input>
+            <Button type="primary" @click="testWrite(test)">Write</Button>
+            <Button type="default" @click="testRead">Read</Button>
+          </div>
+        </div>
+      </Col>
+    </Row>
   </div>
+  <!-- <row>
+    <col span="24">
+      Nav
+    </col>
+
+
+    <nav class="navbar navbar-inverse bg-inverse">
+      <a class="navbar-brand" href="#">XFolio</a>
+    </nav>
+    <ul class="col-md-3">
+      <currency
+        v-for="currency in currencies"
+        v-bind:name="currency.name"
+        v-bind:price="currency.price"
+        v-bind:key="currency.id">
+      </currency>
+    </ul>
+    put chart here
+  </row> -->
 </template>
 
 <script>
 var STORAGE_FILE = 'xfolio.json'
 
 import Currency from './Currency.vue'
+import Graph from './Graph.vue'
 
 export default {
   name: 'dashboard',
   props: ['user'],
-  components: { Currency },
+  components: { Currency, Graph },
   data () {
     return {
       blockstack: window.blockstack,
@@ -77,17 +86,27 @@ export default {
       ],
       map: { 'BTC-USD': 0, 'ETH-USD': 1, 'LTC-USD': 2 },
       currency: '',
-      uidCount: 0
+      test: 0,
+      uidCount: 0,
+      spanLeft: 6,
+      spanMiddle: 0,
+      spanRight: 18
     }
   },
   watch: {
-    todos: {
-      handler: function (todos) {
-        const blockstack = this.blockstack
-        const encrypt = true
-        return blockstack.putFile(STORAGE_FILE, JSON.stringify(todos), encrypt)
-      },
-      deep: true
+    // todos: {
+    //   handler: function (todos) {
+    //     const blockstack = this.blockstack
+    //     const encrypt = true
+    //     return blockstack.putFile(STORAGE_FILE, JSON.stringify(todos), encrypt)
+    //   },
+    //   deep: true
+    // }
+
+  },
+  computed: {
+    iconSize () {
+      return this.spanLeft === 5 ? 14 : 24
     }
   },
   mounted () {
@@ -119,6 +138,38 @@ export default {
     updatePrice (name, price) {
       this.currencies[this.map[name]].price = price
     },
+
+    toggleClick () {
+      if (this.spanLeft === 6) {
+        this.spanLeft = 2
+        this.spanRight = 22
+      } else {
+        this.spanLeft = 6
+        this.spanRight = 18
+      }
+    },
+
+    testWrite (test) {
+      console.log('testWrite: ' + test)
+      const blockstack = this.blockstack
+      const encrypt = true
+      return blockstack.putFile(STORAGE_FILE, JSON.stringify(test), encrypt)
+    },
+
+    testRead () {
+      const blockstack = this.blockstack
+      const decrypt = true
+      blockstack.getFile(STORAGE_FILE, decrypt)
+      .then((response) => {
+        console.log('testRead: ')
+        var data = JSON.parse(response || '[]')
+        console.log('data: ' + data)
+        data.forEach(function (data) {
+          console.log(data)
+        })
+      })
+    },
+
     // addTodo () {
     //   if (!this.todo.trim()) {
     //     return
@@ -152,43 +203,45 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="scss" scoped>
-
-input::placeholder {
-  color: grey;
+<style lang="less" scoped>
+.expand-toggle{
+    position: absolute;
+    right: 20px;
 }
-
-label {
-  margin-bottom: 0;
-  // width: 100%;
-  cursor: pointer;
-  input[type="checkbox"] {
-    margin-right: 5px;
-  }
+.layout{
+    background: #f5f7f9;
+    position: relative;
+    overflow: hidden;
+    height: 100%;
 }
-
-ul {
-  list-style: none;
+.layout-content{
+    min-height: 200px;
+    margin: 15px;
+    overflow: hidden;
+    background: #fff;
+    border-radius: 4px;
 }
-
-.list-group-item {
-  &.completed label {
-    text-decoration: line-through;
-  }
-
-  .delete {
+.layout-content-main{
+    padding: 10px;
+}
+.layout-menu-left{
+    background: #464c5b;
+}
+.layout-header{
+    height: 60px;
+    background: #fff;
+    box-shadow: 0 1px 1px rgba(0,0,0,.1);
+}
+.layout-ceiling-main a{
+    color: #9ba7b5;
+}
+.layout-hide-text .layout-text{
     display: none;
-  }
-
-  &:hover .delete {
-    display: inline;
-    color: grey;
-    &:hover {
-      text-decoration: none;
-      color: red;
-    }
-  }
 }
-
+.ivu-col{
+    transition: width .2s ease-in-out;
+}
+.ivu-row-flex{
+    height: 100%;
+}
 </style>

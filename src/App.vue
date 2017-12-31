@@ -12,7 +12,7 @@ import Dashboard from './components/Dashboard.vue'
 
 export default {
   name: 'app',
-  components: {Landing, Dashboard},
+  components: { Landing, Dashboard },
   mounted () {
     const blockstack = this.blockstack
     if (blockstack.isUserSignedIn()) {

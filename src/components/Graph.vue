@@ -4,10 +4,24 @@
 
 <script>
 
+import ECharts from './../../node_modules/vue-echarts/components/ECharts.vue'
+import './../../node_modules/echarts/lib/chart/line'
+import './../../node_modules/echarts/lib/component/tooltip'
+import './../../node_modules/echarts/lib/component/polar'
+import './../../node_modules/echarts/lib/component/geo'
+import './../../node_modules/echarts/lib/component/legend'
+import './../../node_modules/echarts/lib/component/title'
+
 export default {
   name: 'graph',
-  // components: { chart: EChart },
+  components: { chart: ECharts },
   data: function () {
+    var request = require('request')
+    request('http://www.google.com', function (error, response, body) {
+      console.log('error:', error) // Print the error if one occurred
+      console.log('body:', body) // Print the HTML for the Google homepage.
+    })
+
     let data = []
 
     for (let i = 0; i <= 360; i++) {

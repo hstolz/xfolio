@@ -1,6 +1,8 @@
 <template>
   <div class="layout">
-    <Graph></Graph>
+    <Row type="flex" class="graph">
+      <Graph></Graph>
+    </Row>
     <Row style="background:#eee;padding:20px" type="flex" justify="space-between">
       <currency :span="7"
         v-for="currency in currencies"
@@ -113,8 +115,13 @@ export default {
 <style lang="less" scoped>
 .layout{
     background: #f5f7f9;
-    position: relative;
-    overflow: hidden;
+    display: flex;
+    flex-direction: column;
     height: 100%;
+    overflow: hidden;
+    position: relative;
+}
+.graph {
+  flex: auto;
 }
 </style>

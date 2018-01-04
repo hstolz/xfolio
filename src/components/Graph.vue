@@ -1,5 +1,5 @@
 <template>
-  <chart :options="polar"></chart>
+  <chart v-if="show" :options="line" ref="chart" />
 </template>
 
 <script>
@@ -12,59 +12,127 @@ import './../../node_modules/echarts/lib/component/geo'
 import './../../node_modules/echarts/lib/component/legend'
 import './../../node_modules/echarts/lib/component/title'
 
+const axios = require('axios')
+
 export default {
   name: 'graph',
   components: { chart: ECharts },
   data: function () {
-    var request = require('request')
-    request('http://www.google.com', function (error, response, body) {
-      console.log('error:', error) // Print the error if one occurred
-      console.log('body:', body) // Print the HTML for the Google homepage.
-    })
-
-    let data = []
-
-    for (let i = 0; i <= 360; i++) {
-      let t = i / 180 * Math.PI
-      let r = Math.sin(2 * t) * Math.cos(2 * t)
-      data.push([r, i])
-    }
-
     return {
-      polar: {
-        title: {
-          text: '极坐标双数值轴'
+      line: {
+        xAxis: {
+          axisTick: {
+            show: false
+          },
+          axisLabel: {
+            show: false
+          },
+          data: []
         },
-        legend: {
-          data: ['line']
-        },
-        polar: {
-          center: ['50%', '54%']
-        },
-        tooltip: {
-          trigger: 'axis',
-          axisPointer: {
-            type: 'cross'
-          }
-        },
-        angleAxis: {
-          type: 'value',
-          startAngle: 0
-        },
-        radiusAxis: {
-          min: 0
-        },
-        series: [
-          {
-            coordinateSystem: 'polar',
+        yAxis: {},
+        series: [{
+          name: 'placeholder',
+          type: 'line',
+          data: []
+        }]
+      },
+      show: false
+    }
+  },
+  mounted () {
+    let self = this
+    this.$nextTick(function () {
+      axios.get('https://min-api.cryptocompare.com/data/histoday?fsym=BTC&tsym=USD&allData=true')
+      .then(function (response) {
+        console.log(response.data.Data)
+        let all = response.data.Data
+        self.show = true
+
+        self.line = {
+          xAxis: {
+            data: all.map(item => item.time)
+          },
+          yAxis: {
+            min: 0,
+            max: Math.max(...all.map(item => item.high))
+          },
+          tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+              type: 'cross'
+            }
+          },
+          series: [{ /*
+            name: 'low',
+            type: 'line',
+            data: all.map(item => item.low),
+            lineStyle: {
+              normal: {
+                opacity: 0
+              }
+            },
+            stack: 'low-high',
+            symbol: 'none'
+          }, {
+            name: 'high',
+            type: 'line',
+            data: all.map(item => item.high - item.low),
+            lineStyle: {
+              normal: {
+                opacity: 0
+              }
+            },
+            areaStyle: {
+              normal: {
+                color: '#ccc'
+              }
+            },
+            stack: 'low-high',
+            symbol: 'none'
+          }, { */
             name: 'line',
             type: 'line',
-            showSymbol: false,
-            data: data
-          }
-        ],
-        animationDuration: 2000
+            data: all.map(item => item.close),
+            hoverAnimation: false,
+            symbolSize: 6,
+            itemStyle: {
+              normal: {
+                color: '#c23531'
+              }
+            },
+            showSymbol: false
+          }],
+          animationDuration: 1000
+        }
+      })
+      .catch(error => console.error(error))
+    })
+  },
+  methods: {
+    convertTimestamp (timestamp) {
+      var d = new Date(timestamp * 1000)
+      var yyyy = d.getFullYear()
+      var mm = ('0' + (d.getMonth() + 1)).slice(-2)
+      var dd = ('0' + d.getDate()).slice(-2)
+      var hh = d.getHours()
+      var h = hh
+      var min = ('0' + d.getMinutes()).slice(-2)
+      var ampm = 'AM'
+      var time
+
+      if (hh > 12) {
+        h = hh - 12
+        ampm = 'PM'
+      } else if (hh === 12) {
+        h = 12
+        ampm = 'PM'
+      } else if (hh === 0) {
+        h = 12
       }
+
+      time = yyyy + '-' + mm + '-' + dd + ', ' + h + ':' + min + ' ' + ampm
+
+      return time
     }
   }
 }
@@ -73,7 +141,8 @@ export default {
 <style lang="less" scoped>
 
 .echarts {
-  height: 300px;
+  width: 100%;
+  height: auto;
 }
 
 </style>

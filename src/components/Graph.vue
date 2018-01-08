@@ -16,6 +16,7 @@ const axios = require('axios')
 
 export default {
   name: 'graph',
+  // props: ['symbol', 'timescale'],
   components: { chart: ECharts },
   data: function () {
     return {
@@ -44,7 +45,7 @@ export default {
     this.$nextTick(function () {
       axios.get('https://min-api.cryptocompare.com/data/histoday?fsym=BTC&tsym=USD&allData=true')
       .then(function (response) {
-        console.log(response.data.Data)
+        // console.log(response.data.Data)
         let all = response.data.Data
         self.show = true
 

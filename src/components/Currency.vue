@@ -1,14 +1,21 @@
 <template>
   <Col :span="span">
     <Card :bordered="false">
-        <p slot="title">{{ name }}</p>
+        <p slot="title">
+          {{ name }} — ${{ parseFloat(price).toLocaleString(undefined,
+            { maximumFractionDigits: 2, minimumFractionDigits: 2}) }}
+        </p>
         <a href="#" slot="extra" @click.prevent="edit_modal = true">
           Edit
           <Icon type="edit"></Icon>
         </a>
         <Row>
-          <Col>{{ parseFloat(price).toFixed(2) }}</Col>
-          <Col>{{ balance }}</Col>
+          <!-- <Col>${{ parseFloat(price).toFixed(2) }}</Col> -->
+          <Col span="12">{{ balance }} {{ name }}</Col>
+          <Col span="12" style="text-align:right">
+            ${{ (balance * parseFloat(price)).toLocaleString(undefined,
+              { maximumFractionDigits: 2, minimumFractionDigits: 2}) }}
+          </Col>
         </Row>
     </Card>
     <Modal v-model="edit_modal" width="360">
@@ -36,6 +43,11 @@ export default {
     }
   },
   watch: {
+    balance: {
+      handler: function (balance) {
+        this.modal_balance = balance
+      }
+    }
   },
   mounted () {
   },
@@ -56,5 +68,6 @@ export default {
 .ivu-input-number {
   width:100%
 }
+
 
 </style>

@@ -3,6 +3,24 @@
     <Row type="flex" class="graph">
       <Graph></Graph>
     </Row>
+    
+    <!-- <Row style="background:#eee;padding:10px 20px" type="flex">
+      <RadioGroup v-model="timeScale" type="button" size="large" justify="space-between">
+        <Col span="5">
+          <Radio label="One"></Radio>
+        </Col>
+        <Col span="5">
+          <Radio label="Two"></Radio>
+        </Col>
+        <Col span="5">
+          <Radio label="Three"></Radio>
+        </Col>
+        <Col span="5">
+          <Radio label="Four"></Radio>
+        </Col>
+      </RadioGroup>
+    </Row> -->
+
     <Row style="background:#eee;padding:20px" type="flex" justify="space-between">
       <currency :span="7"
         v-for="currency in currencies"
@@ -28,6 +46,10 @@ export default {
   components: { Currency, Graph },
   data () {
     return {
+      button: '',
+      // timeScale: [
+      //   { id: 0, name: 'All Time', }
+      // ],
       blockstack: window.blockstack,
       currencies: [
         { id: 0, name: 'BTC', price: 0, balance: 0 },
@@ -113,7 +135,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.layout{
+.layout {
     background: #f5f7f9;
     display: flex;
     flex-direction: column;
@@ -123,5 +145,12 @@ export default {
 }
 .graph {
   flex: auto;
+}
+.ivu-radio-group {
+  flex: auto;
+  width: 100%;
+}
+.ivu-radio-group-item {
+    width: 100%;
 }
 </style>

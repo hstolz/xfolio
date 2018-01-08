@@ -9,8 +9,8 @@
           Edit
           <Icon type="edit"></Icon>
         </a>
+        <Spin size="small" v-if="spin" fix></Spin>
         <Row>
-          <!-- <Col>${{ parseFloat(price).toFixed(2) }}</Col> -->
           <Col span="12">{{ balance }} {{ name }}</Col>
           <Col span="12" style="text-align:right">
             ${{ (balance * parseFloat(price)).toLocaleString(undefined,
@@ -19,13 +19,20 @@
         </Row>
     </Card>
     <Modal v-model="edit_modal" width="360">
-        <p slot="header" style="color:#f60;text-align:center">
+        <p slot="header" style="text-align:center">
             <span>Update {{ name }} Balance</span>
             <Icon type="edit"></Icon>
         </p>
-        <InputNumber :min="0" :step=".01" size="large" v-model="modal_balance"></InputNumber>
+        <InputNumber autofocus
+          :min="0"
+          :step=".01"
+          size="large"
+          v-model="modal_balance"
+          @keyup.enter.native="update"
+          @keyup.esc.native="edit_modal=false">
+        </InputNumber>
         <div slot="footer">
-            <Button type="error" size="large" long :loading="modal_loading" v-on:click="update">Update</Button>
+            <Button type="error" size="large" long :loading="modal_loading" @click="update">Update</Button>
         </div>
     </Modal>
   </Col>
@@ -37,6 +44,7 @@ export default {
   props: ['name', 'price', 'balance', 'span'],
   data () {
     return {
+      spin: true,
       edit_modal: false,
       modal_balance: this.balance,
       modal_loading: false
@@ -45,6 +53,7 @@ export default {
   watch: {
     balance: {
       handler: function (balance) {
+        this.spin = false
         this.modal_balance = balance
       }
     }
@@ -53,21 +62,23 @@ export default {
   },
   methods: {
     update () {
-      this.$emit('update', this.name, this.modal_balance)
       this.edit_modal = false
+      this.spin = true
+      this.$Loading.start()
+      this.$emit('update', this.name, this.modal_balance)
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
-
 .ivu-icon {
   padding-left:5px
 }
 .ivu-input-number {
   width:100%
 }
-
-
+.ivu-card {
+  margin:5px;
+}
 </style>

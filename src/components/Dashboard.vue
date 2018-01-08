@@ -1,9 +1,22 @@
 <template>
   <div class="layout">
+    <Menu mode="horizontal">
+      <MenuItem name="1">
+        <Icon type="cube"></Icon>
+        XFolio
+      </MenuItem>
+      <Col>
+        <Button @click="signOut">
+          <Icon type="log-out"></Icon>
+          Logout
+        </Button>
+      </Col>
+    </Menu>
+
     <Row type="flex" class="graph">
-      <Graph></Graph>
+      <Graph :symbol="this.currency"></Graph>
     </Row>
-    
+
     <!-- <Row style="background:#eee;padding:10px 20px" type="flex">
       <RadioGroup v-model="timeScale" type="button" size="large" justify="space-between">
         <Col span="5">
@@ -21,8 +34,8 @@
       </RadioGroup>
     </Row> -->
 
-    <Row style="background:#eee;padding:20px" type="flex" justify="space-between">
-      <currency :span="7"
+    <Row style="background:#eee;padding:10px" type="flex" justify="space-between">
+      <currency :span="8" @click.native="changeFocus(currency.name)"
         v-for="currency in currencies"
         v-bind:name="currency.name"
         v-bind:price="currency.price"
@@ -56,9 +69,8 @@ export default {
         { id: 1, name: 'ETH', price: 0, balance: 0 },
         { id: 2, name: 'LTC', price: 0, balance: 0 }
       ],
+      currency: 'BTC',
       map: { 'BTC': 0, 'ETH': 1, 'LTC': 2 },
-      currency: '',
-      test: 0,
       uidCount: 0
     }
   },
@@ -97,13 +109,15 @@ export default {
     },
 
     updateBalance: function (name, balance) {
-      this.currencies[this.map[name]].balance = balance
       this.writeData(this.currencies)
       .then((response) => {
-        if (!response) {
-          // modal/alert instead?
-          console.error('failed to write data')
-        }
+        this.currencies[this.map[name]].balance = balance
+        this.$Loading.finish()
+      })
+      .catch(error => {
+        this.$Loading.error()
+        console.error(error)
+        this.$Message.error('Failed to update balance.')
       })
     },
 
@@ -125,6 +139,10 @@ export default {
         this.uidCount = currencies.length
         this.currencies = currencies
       })
+    },
+
+    changeFocus (name) {
+      this.currency = name
     },
 
     signOut () {

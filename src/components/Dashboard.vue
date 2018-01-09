@@ -7,7 +7,7 @@
           XFolio
         </div>
         <MenuItem name="Logout">
-          <a href="#" @click="signOut">
+          <a href="#" @click.prevent.stop="signOut">
             <Icon type="log-out"></Icon>
             Logout
           </a>
@@ -35,8 +35,12 @@
       <RadioGroup
         v-model="timescale"
         type="button">
-        <Radio v-for"timescale in timescales">
-        </Radio>
+        <Radio label="All"></Radio>
+        <Radio label="Year"></Radio>
+        <Radio label="Month"></Radio>
+        <Radio label="Week"></Radio>
+        <Radio label="Day"></Radio>
+        <Radio label="Hour"></Radio>
       </RadioGroup>
     </Row>
 
@@ -48,7 +52,7 @@
         :balance="currency.balance"
         :key="currency.id"
         :active="currency.active"
-        :update="updateBalance">
+        v-on:update="updateBalance">
       </currency>
     </Row>
   </div>

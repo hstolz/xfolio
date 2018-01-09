@@ -1,11 +1,11 @@
 <template>
   <Col :span="span">
-    <Card :bordered="false">
+    <Card :bordered="false" :class="{ active: active }">
         <p slot="title">
           {{ name }} — ${{ parseFloat(price).toLocaleString(undefined,
             { maximumFractionDigits: 2, minimumFractionDigits: 2}) }}
         </p>
-        <a href="#" slot="extra" @click.prevent="edit_modal = true">
+        <a href="#" slot="extra" @click.stop.prevent="edit_modal = true">
           Edit
           <Icon type="edit"></Icon>
         </a>
@@ -41,7 +41,7 @@
 <script>
 export default {
   name: 'currency',
-  props: ['name', 'price', 'balance', 'span'],
+  props: ['name', 'price', 'balance', 'span', 'active'],
   data () {
     return {
       spin: true,
@@ -80,5 +80,8 @@ export default {
 }
 .ivu-card {
   margin:5px;
+}
+.active {
+  box-shadow: 0 0 3px #2b85e4;  // use less variable...
 }
 </style>

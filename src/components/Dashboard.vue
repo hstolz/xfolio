@@ -1,47 +1,54 @@
 <template>
   <div class="layout">
-    <Menu mode="horizontal">
-      <MenuItem name="1">
-        <Icon type="cube"></Icon>
-        XFolio
-      </MenuItem>
-      <Col>
-        <Button @click="signOut">
-          <Icon type="log-out"></Icon>
-          Logout
-        </Button>
-      </Col>
-    </Menu>
+    <Header>
+      <Menu mode="horizontal" type="flex" justify="space-between">
+        <div class="logo">
+          <Icon type="cube"></Icon>
+          XFolio
+        </div>
+        <MenuItem name="Logout">
+          <a href="#" @click="signOut">
+            <Icon type="log-out"></Icon>
+            Logout
+          </a>
+        </MenuItem>
+        <MenuItem name="Info">
+          <a href="#" @click.prevent="info_modal = true">
+            <Icon type="ios-information"></Icon>
+            Info
+          </a>
+        </MenuItem>
+        <Modal
+          v-model="info_modal" title="Information" width="360">
+          Exchange Data provided by
+          <a href="https://www.cryptocompare.com/" target="blank">CryptoCompare</a>
+      </Modal>
+      </Menu>
+    </Header>
 
     <Row type="flex" class="graph">
-      <Graph :symbol="this.currency"></Graph>
+      <Graph :symbol="this.currency" :timescale="timescale"></Graph>
     </Row>
 
-    <!-- <Row style="background:#eee;padding:10px 20px" type="flex">
-      <RadioGroup v-model="timeScale" type="button" size="large" justify="space-between">
-        <Col span="5">
-          <Radio label="One"></Radio>
-        </Col>
-        <Col span="5">
-          <Radio label="Two"></Radio>
-        </Col>
-        <Col span="5">
-          <Radio label="Three"></Radio>
-        </Col>
-        <Col span="5">
-          <Radio label="Four"></Radio>
-        </Col>
+    <Row class="timescale-container">
+      Time Scale
+      <RadioGroup
+        v-model="timescale"
+        type="button">
+        <Radio v-for"timescale in timescales">
+        </Radio>
       </RadioGroup>
-    </Row> -->
+    </Row>
 
-    <Row style="background:#eee;padding:10px" type="flex" justify="space-between">
-      <currency :span="8" @click.native="changeFocus(currency.name)"
+    <Row class="currency-container" type="flex" justify="space-between">
+      <currency :span="8" @click.native="changeFocus(currency)"
         v-for="currency in currencies"
-        v-bind:name="currency.name"
-        v-bind:price="currency.price"
-        v-bind:balance="currency.balance"
-        v-bind:key="currency.id"
-        v-on:update="updateBalance">
+        :name="currency.name"
+        :price="currency.price"
+        :balance="currency.balance"
+        :key="currency.id"
+        :active="currency.active"
+        :update="updateBalance">
       </currency>
     </Row>
   </div>
@@ -59,19 +66,18 @@ export default {
   components: { Currency, Graph },
   data () {
     return {
-      button: '',
-      // timeScale: [
-      //   { id: 0, name: 'All Time', }
-      // ],
       blockstack: window.blockstack,
       currencies: [
-        { id: 0, name: 'BTC', price: 0, balance: 0 },
-        { id: 1, name: 'ETH', price: 0, balance: 0 },
-        { id: 2, name: 'LTC', price: 0, balance: 0 }
+        { id: 0, name: 'BTC', price: 0, balance: 0, active: true },
+        { id: 1, name: 'ETH', price: 0, balance: 0, active: false },
+        { id: 2, name: 'LTC', price: 0, balance: 0, active: false }
       ],
       currency: 'BTC',
       map: { 'BTC': 0, 'ETH': 1, 'LTC': 2 },
-      uidCount: 0
+      uidCount: 0,
+      timescales: ['All', 'Year', 'Month', 'Week', 'Day', 'Hour'],
+      timescale: 'All',
+      info_modal: false
     }
   },
   watch: {
@@ -81,6 +87,7 @@ export default {
   mounted () {
     this.readData()
     var self = this
+
     const socket = new WebSocket('wss://ws-feed.gdax.com')
 
     socket.addEventListener('open', function (event) {
@@ -92,7 +99,6 @@ export default {
       socket.send(JSON.stringify(msg))
     })
 
-    // probably should make this only happen when focus goes on some element
     socket.addEventListener('message', function (event) {
       var msg = JSON.parse(event.data)
       if (msg.type === 'ticker') {
@@ -109,9 +115,10 @@ export default {
     },
 
     updateBalance: function (name, balance) {
+      let currency = this.currencies[this.map[name]]
       this.writeData(this.currencies)
       .then((response) => {
-        this.currencies[this.map[name]].balance = balance
+        currency.balance = balance
         this.$Loading.finish()
       })
       .catch(error => {
@@ -141,8 +148,10 @@ export default {
       })
     },
 
-    changeFocus (name) {
-      this.currency = name
+    changeFocus (currency) {
+      this.currencies[this.map[this.currency]].active = false
+      this.currencies[this.map[currency.name]].active = true
+      this.currency = currency.name
     },
 
     signOut () {
@@ -154,21 +163,41 @@ export default {
 
 <style lang="less" scoped>
 .layout {
-    background: #f5f7f9;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    overflow: hidden;
-    position: relative;
+  background: #f5f7f9;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+.logo {
+  .ivu-icon {
+    margin-right: 5px;
+  }
+  font-size: 135%;
+  float: left;
+  position: relative;
+  left: 20px;
+}
+.ivu-menu-item {
+  a {
+    display: block;
+  }
+  float: right;
+  right: 5px;
 }
 .graph {
   flex: auto;
 }
 .ivu-radio-group {
-  flex: auto;
-  width: 100%;
+  margin-left: 5px;
 }
-.ivu-radio-group-item {
-    width: 100%;
+.currency-container {
+  background: #eee;
+  padding: 0px 10px 10px 10px;
+}
+.timescale-container {
+  background: #eee;
+  padding: 8px 15px 3px 15px;
 }
 </style>

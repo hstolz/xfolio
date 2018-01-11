@@ -142,13 +142,18 @@ export default {
       const blockstack = this.blockstack
       const decrypt = true
       blockstack.getFile(STORAGE_FILE, decrypt)
-      .then((response) => {
+      .then(response => {
         var currencies = JSON.parse(response || '[]')
         currencies.forEach(function (currency, index) {
           currency.id = index // might not need...
         })
         this.uidCount = currencies.length
         this.currencies = currencies
+      })
+      .catch(error => {
+        console.error(error)
+        this.$Message.error('Failed to read.')
+        this.currencies = this.currencies // might work
       })
     },
 
